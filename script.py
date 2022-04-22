@@ -1,5 +1,6 @@
 from asyncore import write
 import argparse
+from fileinput import close
 import hashlib
 import time # Just to sate my curiosity
 
@@ -15,27 +16,28 @@ args = parser.parse_args()
 threeHashBitArray = [0] * 16777216 # 16 kb
 fiveHashBitArray = [0] * 16777216 # 16 kb
 
-#Salt added after
-#   Salt just makes the cryptographic cipher independent
+#Encrypts the plaintext with md5
+#   Salt is added uniformly to all passwords, both trained and tested
+#       This makes the cryptographic hashes independent
+#   Salt is just integers counting up from 0 added to the end of the passwords 
 def encrypt(plaintext):
     crypt = hashlib.md5() # Gonna use just md5 ; Security w/e, this is faster
     ptBytes = plaintext.encode('utf-8')
     crypt.update(ptBytes)
     ciphertext = crypt.hexdigest()
-    #6 Bytes of the hash selected
+    #First 6 Bytes of the hash selected
     #   This gives (2^4)^6 or 2^24 potential slots;
     #   I.E. 16 Kilobytes of potential bits
     #   Given the password file is only 6k, I think this is good
     ciphertext = ciphertext[:6]
     return ciphertext
 
-
+c
 def fullEncrypt(plaintext, hashCount):
     encArray = []
     for x in range(0, hashCount):
-        #print(plaintext + str(x))
         encArray.append( encrypt( plaintext + str(x) ) )
-    #print(encArray)
+
     return encArray
 
 
@@ -49,14 +51,12 @@ def trainBitArray(encArray, bitArray):
     for item in encArray:
         numArray.append( int( item, base = 16 ) )
 
-    #print(numArray)
-
     for index in numArray:
         bitArray[index] = 1
-        #print(bitArray[index])
     
-# Returns 1 if a bad password is found;
-def testBitArray(encArray, bitArray, hashCount):
+# Returns 1 if a all bits at a password's hash are set
+# Returns a 0 if not every bit is found
+def testBitArray(encArray, bitArray):
     numArray = []
     for item in encArray:
         numArray.append( int( item, base = 16 ) )
@@ -69,7 +69,7 @@ def testBitArray(encArray, bitArray, hashCount):
             counter += 1
         #print(bitArray[index])
     
-    if (counter == hashCount):
+    if (counter == len(encArray)):
         #print("BAD PASSWORD FOUND")
         return 1
     else:
@@ -94,6 +94,7 @@ def main():
         endTrain = time.time()
 
         print("Time it took to train both bit arrays: ~%.2f seconds" % (endTrain - startTrain) )
+
     #For every line in the input file (i.e. a password to test)
     #   Encrypt the line with MD5 N times with the same salt as above
     #   Then, check the bit array at the indices specified by the hashes
@@ -106,17 +107,20 @@ def main():
             currLine = line.rstrip()
 
             threeEncArray = fullEncrypt(currLine, 3)
-            if ( testBitArray(threeEncArray, threeHashBitArray, 3) == 1 ):
+            if ( testBitArray(threeEncArray, threeHashBitArray) == 1 ):
                 output3.write(currLine + ": maybe (POTENTIAL BAD PASSWORD)\n")
             else:
                 output3.write(currLine + ": no (GOOD PASSWORD)\n")
 
 
             fiveEncArray = fullEncrypt(currLine, 5)
-            if ( testBitArray(fiveEncArray, fiveHashBitArray, 5) == 1 ):
+            if ( testBitArray(fiveEncArray, fiveHashBitArray) == 1 ):
                 output5.write(currLine + ": maybe (POTENTIAL BAD PASSWORD)\n")
             else:
                 output5.write(currLine + ": no (GOOD PASSWORD)\n")
+
+        output3.close()
+        output5.close()
 
  
 
