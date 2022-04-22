@@ -1,9 +1,7 @@
 from asyncore import write
-import string
-import sys
 import argparse
 import hashlib
-from typing import Counter
+import time # Just to sate my curiosity
 
 #Argument Parser Setup
 parser = argparse.ArgumentParser(description = "Just parses the arguments")
@@ -14,6 +12,7 @@ parser.add_argument("-o5", help="Filepath of output file for passwords tested wi
 args = parser.parse_args()
 
 #Bit Array Setup
+threeHashBitArray = [0] * 16777216 # 16 kb
 fiveHashBitArray = [0] * 16777216 # 16 kb
 
 #Salt added after
@@ -81,33 +80,44 @@ def testBitArray(encArray, bitArray, hashCount):
 def main(): 
 
     with open(args.d, 'r') as f:
+        #For every line in the dictionary (i.e. a bad password)
+        #   Encrypt the line with MD5 N times with salt
+        #   Then, train the bit array by setting the bits at the indices given by the hashes
+        startTrain = time.time()
         for line in f:
             currLine = line.rstrip()
+            threeEncArray = fullEncrypt(currLine, 3)
+            trainBitArray(threeEncArray, threeHashBitArray)
+
             fiveEncArray = fullEncrypt(currLine, 5)
             trainBitArray(fiveEncArray, fiveHashBitArray)
-    
+        endTrain = time.time()
+
+        print("Time it took to train both bit arrays: ~%.2f seconds" % (endTrain - startTrain) )
+    #For every line in the input file (i.e. a password to test)
+    #   Encrypt the line with MD5 N times with the same salt as above
+    #   Then, check the bit array at the indices specified by the hashes
+    #   If there are N collisions, then the password is marked as potentially bad
+    #   Otherwise, the password is good
     with open(args.i, 'r') as f:
+        output3 = open(args.o3, 'w')
+        output5 = open(args.o5, 'w')
         for line in f:
             currLine = line.rstrip()
-            fiveEncArray = fullEncrypt(currLine, 5)
-            if ( testBitArray(fiveEncArray, fiveHashBitArray, 5) ):
-                print(currLine + "maybe (BAD PASSWORD)")
+
+            threeEncArray = fullEncrypt(currLine, 3)
+            if ( testBitArray(threeEncArray, threeHashBitArray, 3) == 1 ):
+                output3.write(currLine + ": maybe (POTENTIAL BAD PASSWORD)\n")
             else:
-                print(currLine + "no (GOOD PASSWORD)")
+                output3.write(currLine + ": no (GOOD PASSWORD)\n")
 
-    #with open(args.t5, 'r') as f:
-    #    counter = 0
-    #    while True:
-    #        c = f.read(1)
-    #        if not c:
-    #            break
-    #        fiveHashBitArray[counter] = int(c)
-    #        counter += 1
-    #        print(counter)
 
-    #with open('trained5Hashes.txt', 'w') as f:
-    #    for item in fiveHashBitArray:
-    #        f.write(str(item))
+            fiveEncArray = fullEncrypt(currLine, 5)
+            if ( testBitArray(fiveEncArray, fiveHashBitArray, 5) == 1 ):
+                output5.write(currLine + ": maybe (POTENTIAL BAD PASSWORD)\n")
+            else:
+                output5.write(currLine + ": no (GOOD PASSWORD)\n")
+
  
 
     
