@@ -1,18 +1,18 @@
-17: maybe (POTENTIAL BAD PASSWORD)
-*holly&ben: maybe (POTENTIAL BAD PASSWORD)
-*homo*: maybe (POTENTIAL BAD PASSWORD)
-*vanusa*: maybe (POTENTIAL BAD PASSWORD)
-010605: maybe (POTENTIAL BAD PASSWORD)
-010605: maybe (POTENTIAL BAD PASSWORD)
-walton-dutch-luzon-post: no (GOOD PASSWORD)
-012190: maybe (POTENTIAL BAD PASSWORD)
-0121909334: maybe (POTENTIAL BAD PASSWORD)
-maskflower: maybe (POTENTIAL BAD PASSWORD)
-2,,{H99*X(: no (GOOD PASSWORD)
-darry-bethel-cube-mess: no (GOOD PASSWORD)
-masking: maybe (POTENTIAL BAD PASSWORD)
-undersupplied: maybe (POTENTIAL BAD PASSWORD)
-undersupplies: maybe (POTENTIAL BAD PASSWORD)
-7^*.$?GC86: no (GOOD PASSWORD)
-undersupply: maybe (POTENTIAL BAD PASSWORD)
-9Ca5B>w8.Q}bhU=ss*sK: no (GOOD PASSWORD)
+17: MAYBE
+*holly&ben: MAYBE
+*homo*: MAYBE
+*vanusa*: MAYBE
+010605: MAYBE
+010605: MAYBE
+walton-dutch-luzon-post: NO
+012190: MAYBE
+0121909334: MAYBE
+maskflower: MAYBE
+2,,{H99*X(: NO
+darry-bethel-cube-mess: NO
+masking: MAYBE
+undersupplied: MAYBE
+undersupplies: MAYBE
+7^*.$?GC86: NO
+undersupply: MAYBE
+9Ca5B>w8.Q}bhU=ss*sK: NO
